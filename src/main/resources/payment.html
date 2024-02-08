@@ -8,6 +8,7 @@
     </script>
 </head>
 <body>
+<div id="timer"></div>
 <div id="ten-countdown"></div>
 <div method="post">
     <section style="background-color: chocolate;">
@@ -17,7 +18,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="card-title d-flex justify-content-between mb-0">
-                                <p class="mb-0">$760</p>
+                                <p class="mb-0">Payment Gateway</p>
                             </div>
                         </div>
                         <div class="rounded-bottom" style="background-color: chocolate">
@@ -28,6 +29,9 @@
                                     <input type="text" id="cardNumber" class="form-control"
                                            placeholder="1234567812345678"/>
                                     <label class="form-label" for="cardNumber">Card Number</label>
+                                    <input type="text" id="offerId" class="form-control"
+                                           placeholder="offerId"/>
+                                    <label class="form-label" for="offerId">Offer Id</label>
                                 </div>
 
                                 <div class="col-6">
@@ -66,6 +70,7 @@ document.getElementById('submit').addEventListener('click', function() {
   const month = document.getElementById("mm").value;
   const year = document.getElementById("yy").value;
   const password= document.getElementById("password").value;
+  const offerId = document.getElementById("offerId").value;
 
   const url = 'http://localhost:8182/api/customer/payment';
   const data = {
@@ -73,7 +78,8 @@ document.getElementById('submit').addEventListener('click', function() {
         cvv,
         month,
         year,
-        password
+        password,
+      offerId
     };
 
   fetch(url, {
@@ -95,6 +101,29 @@ document.getElementById('submit').addEventListener('click', function() {
     console.log('An error occurred: ' + error);
   });
 });
+const targetDate = new Date('January 1, 2025 00:00:00').getTime();
+
+const timer = setInterval(function() {
+
+    const currentDate = new Date().getTime();
+
+    const timeRemaining = targetDate - currentDate;
+
+
+    const minutes = Math.floor((timeRemaining % (205 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+    document.getElementById('timer').innerHTML = `
+        <div>${minutes} Minutes</div>
+        <div>${seconds} Seconds</div>
+    `;
+
+    if (timeRemaining < 0) {
+        clearInterval(timer);
+        document.getElementById('timer').innerHTML = 'Countdown expired!';
+    }
+}, 1000);
+
 
 </script>
 

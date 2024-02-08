@@ -21,6 +21,7 @@ public class PaymentRequest implements Serializable {
     private String day;
 
     private String password;
+    private Integer offerId;
 //    @Transient
 //    private String captcha;
 //

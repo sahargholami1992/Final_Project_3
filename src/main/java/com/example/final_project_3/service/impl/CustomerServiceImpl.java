@@ -140,12 +140,20 @@ public class CustomerServiceImpl extends BaseUserServiceImpl<Customer, CustomerR
         Credit expertCredit = offer.getExpert().getCredit();
         expertCredit.setBalance(offer.getRecommendedPrice()*0.7);
         creditService.saveCredit(expertCredit);
+        checkTimeToReduceScore(offer);
     }
 
+    @Transactional
     @Override
     public void processOnlinePayment(PaymentRequest paymentRequest) {
-        paymentService.paymentDone(paymentRequest);
-
+//        paymentService.paymentDone(paymentRequest);
+        Offer offer = offerService.findById(paymentRequest.getOfferId());
+        Order order = offer.getOrder();
+        order.setStatusOrder(StatusOrder.PAID);
+        orderService.update(order);
+        Credit expertCredit = offer.getExpert().getCredit();
+        expertCredit.setBalance(offer.getRecommendedPrice()*0.7);
+        creditService.saveCredit(expertCredit);
     }
 
     @Transactional

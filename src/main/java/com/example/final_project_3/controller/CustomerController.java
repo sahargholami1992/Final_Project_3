@@ -29,7 +29,14 @@ public class CustomerController {
 
     @CrossOrigin
     @PostMapping("/payment")
-    public ResponseEntity<String> payment(@RequestBody PaymentRequest request, Model model){
+    public ResponseEntity<String> payment(@RequestBody PaymentRequest request,BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().build();
+        }
+        Set<ConstraintViolation<PaymentRequest>> violations = validator.validate(request);
+        if (!violations.isEmpty()) {
+            throw new NoMatchResultException("invalid regex format" + violations);
+        }
         customerService.processOnlinePayment(request);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
