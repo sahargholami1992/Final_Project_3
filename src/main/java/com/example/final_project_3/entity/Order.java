@@ -37,6 +37,6 @@ public class Order implements Serializable {
     @OneToMany(mappedBy = "order")
     private List<Offer> offers;
     @OneToOne
-    private Comment comment;
+    private Review review;
 
 }

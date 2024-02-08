@@ -21,6 +21,6 @@ public interface SubServiceService{
     void saveOrUpdate(SubService subService);
 
     Collection<SubService> loadAll();
-    void deleteAll();
+    SubService findBySubServiceName(String subServiceName);
 
 }

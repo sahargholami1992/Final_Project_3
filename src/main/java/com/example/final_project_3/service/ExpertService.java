@@ -2,18 +2,23 @@ package com.example.final_project_3.service;
 
 
 import com.example.final_project_3.entity.Expert;
+import com.example.final_project_3.entity.Offer;
 import com.example.final_project_3.entity.Order;
-import com.example.final_project_3.service.dto.ExpertRegisterDto;
-import com.example.final_project_3.service.dto.OfferDto;
-import com.example.final_project_3.service.user.UserService;
+import com.example.final_project_3.dto.OfferDto;
+import com.example.final_project_3.dto.ReviewProjection;
+import com.example.final_project_3.service.user.BaseUserService;
 
-public interface ExpertService extends UserService<Expert> {
-    Expert registerExpert(ExpertRegisterDto dto);
+import java.util.Collection;
+import java.util.List;
+
+public interface ExpertService extends BaseUserService<Expert> {
+    Expert registerExpert(Expert expert,String imagePath);
 
     void changeExpertStatus(Expert expert);
-    void sendOffer(Expert expert, Order order, OfferDto dto);
-    byte[] readsImage(String imageName);
-    boolean saveImageToFile(byte[] imageData, String outputPath);
+    Offer sendOffer(OfferDto dto);
+    boolean saveImageToFile(Integer expertId);
+    Collection<Order> getPendingOrdersForExpert(Integer expertId);
     Expert saveExpert(Expert expert);
+    List<ReviewProjection> getReviewsForExpert(Integer expertId);
 
 }

@@ -12,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 @Entity
-public class Customer extends User {
+public class Customer extends BaseUser {
     @OneToOne
     private Credit credit;
 

@@ -13,8 +13,9 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Entity
-public class Expert extends User {
+public class Expert extends BaseUser {
     @Enumerated(EnumType.STRING)
     private ExpertStatus expertStatus;
     private int score;
@@ -27,12 +28,12 @@ public class Expert extends User {
     @ManyToMany(mappedBy = "experts")
     private Set<SubService> subServices = new HashSet<>();
 
-    @Override
-    public String toString() {
-        return "Expert{" +
-                super.toString()+
-                ", expertStatus=" + expertStatus +
-                ", score=" + score +
-                "} " ;
-    }
+//    @Override
+//    public String toString() {
+//        return "Expert{" +
+//                super.toString()+
+//                ", expertStatus=" + expertStatus +
+//                ", score=" + score +
+//                "} " ;
+//    }
 }

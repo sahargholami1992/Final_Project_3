@@ -1,70 +1,51 @@
 package com.example.final_project_3.service.impl;
 
 
-import com.example.final_project_3.entity.Expert;
-import com.example.final_project_3.entity.Order;
-import com.example.final_project_3.entity.enumaration.ExpertStatus;
+import com.example.final_project_3.entity.*;
+import com.example.final_project_3.entity.enumaration.Permissions;
+import com.example.final_project_3.exceptions.DuplicateException;
+import com.example.final_project_3.exceptions.NotFoundException;
 import com.example.final_project_3.repository.ExpertRepository;
-import com.example.final_project_3.service.ExpertService;
-import com.example.final_project_3.service.OfferService;
-import com.example.final_project_3.service.dto.ExpertRegisterDto;
-import com.example.final_project_3.service.dto.OfferDto;
-import com.example.final_project_3.service.user.UserServiceImpl;
-import jakarta.persistence.NoResultException;
+import com.example.final_project_3.service.*;
+import com.example.final_project_3.dto.OfferDto;
+import com.example.final_project_3.dto.ReviewProjection;
+import com.example.final_project_3.service.user.BaseUserServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
+import java.util.Collection;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
-public class ExpertServiceImpl extends UserServiceImpl<Expert, ExpertRepository>
+public class ExpertServiceImpl extends BaseUserServiceImpl<Expert, ExpertRepository>
                               implements ExpertService {
     protected final OfferService offerService;
-    public ExpertServiceImpl(ExpertRepository repository, OfferService offerService) {
+    protected final ReviewService reviewService;
+    protected final CreditService creditService;
+    protected final OrderService orderService;
+    public ExpertServiceImpl(ExpertRepository repository, OfferService offerService, ReviewService reviewService, CreditService creditService, OrderService orderService) {
         super(repository);
         this.offerService=offerService;
+        this.reviewService=reviewService;
+        this.creditService = creditService;
+        this.orderService = orderService;
     }
     @Transactional
     @Override
-    public Expert registerExpert(ExpertRegisterDto dto) {
-        Expert expert = new Expert();
-       expert.setFirstName(dto.getFirstName());
-       expert.setLastName(dto.getLastName());
-       expert.setEmail(dto.getEmail());
-       expert.setPassword(dto.getPassword());
-       expert.setDateRegister(dto.getDateRegister());
-       expert.setRoll(dto.getRoll());
-       expert.setPermissions(dto.getPermission());
-       expert.setExpertStatus(dto.getExpertStatus());
-       expert.setScore(dto.getScore());
-       expert.setProfileImage(dto.getProfileImage());
-       repository.save(expert);
-        return expert;
+    public Expert registerExpert(Expert expert,String imagePath) {
+       if (existByEmail(expert.getEmail()))
+           throw new DuplicateException("this email existed");
+       expert.setProfileImage(readsImage(imagePath));
+       expert.setPermissions(Permissions.WAITING);
+       Credit credit = new Credit();
+       credit.setBalance(0);
+        Credit saveCredit = creditService.saveCredit(credit);
+        expert.setCredit(saveCredit);
+        return repository.save(expert);
     }
-    @Transactional
-    @Override
-    public void changeExpertStatus(Expert expert) {
-        repository.save(expert);
-    }
-
-    @Override
-    public void sendOffer(Expert expert, Order order, OfferDto dto) {
-        offerService.saveOffer(expert,order,dto);
-    }
-
-    @Override
-    public Expert logIn(String email, String password) {
-
-    Expert user = repository.findByEmail(email).
-            orElseThrow(() -> new NoResultException("userName or password is wrong"));
-
-    if (password.equals(user.getPassword()) && !user.getExpertStatus().equals(ExpertStatus.AWAITING_CONFIRMATION)) {
-        return user;
-    }else throw new RuntimeException("userName or password is wrong or you are not accepted yet");
-
-}
-    public byte[] readsImage(String imageName)  {
+    private static byte[] readsImage(String imageName)  {
         InputStream inputStream = ExpertServiceImpl.class.getClassLoader().getResourceAsStream(imageName);
         if (inputStream != null){
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -84,9 +65,24 @@ public class ExpertServiceImpl extends UserServiceImpl<Expert, ExpertRepository>
             return null;
         }
     }
-    public boolean saveImageToFile(byte[] imageData, String outputPath) {
-        try (OutputStream outputStream = new FileOutputStream(outputPath)) {
-            outputStream.write(imageData);
+    @Transactional
+    @Override
+    public void changeExpertStatus(Expert expert) {
+        repository.save(expert);
+    }
+    @Transactional
+    @Override
+    public Offer sendOffer(OfferDto dto) {
+        return offerService.saveOffer(dto);
+    }
+
+
+
+    public boolean saveImageToFile(Integer expertId) {
+        if (!existById(expertId))throw new NotFoundException("this expert id is null");
+        Expert expert = findById(expertId);
+        try (OutputStream outputStream = new FileOutputStream("output.jpg")) {
+            outputStream.write(expert.getProfileImage());
         } catch (IOException e) {
             return false;
         }
@@ -94,8 +90,20 @@ public class ExpertServiceImpl extends UserServiceImpl<Expert, ExpertRepository>
     }
 
     @Override
+    public Collection<Order> getPendingOrdersForExpert(Integer expertId) {
+        if (!existById(expertId))throw new NotFoundException("this expert id is null");
+        Expert expert = findById(expertId);
+        return orderService.getPendingOrdersForExpert(expert);
+    }
+
+    @Override
     public Expert saveExpert(Expert expert) {
         return repository.save(expert);
+    }
+
+    @Override
+    public List<ReviewProjection> getReviewsForExpert(Integer expertId) {
+        return reviewService.findByExpertId(expertId);
     }
 
 }

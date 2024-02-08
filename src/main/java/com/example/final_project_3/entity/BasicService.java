@@ -1,5 +1,6 @@
 package com.example.final_project_3.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
@@ -12,25 +13,30 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Entity
 public class BasicService implements Serializable {
     @Id
     @GeneratedValue
     private Integer id;
 
-   @Column(unique = true)
-   @Pattern(regexp = "^[a-zA-Z\\s]+$")
+//   @Column(unique = true)
+//   @Pattern(regexp = "^[a-zA-Z\\s]+$")
     private String serviceName;
     @ToString.Exclude
     @OneToMany(mappedBy = "basicService")
     private Set<SubService> subServices = new HashSet<>();
-
-
-    @Override
-    public String toString() {
-        return "Service{" +
-                "id=" + id +
-                ", serviceName='" + serviceName + '\'' +
-                '}';
+    @JsonIgnore
+    public Set<SubService> getSubServices(){
+        return subServices;
     }
+
+
+//    @Override
+//    public String toString() {
+//        return "Service{" +
+//                "id=" + id +
+//                ", serviceName='" + serviceName + '\'' +
+//                '}';
+//    }
 }

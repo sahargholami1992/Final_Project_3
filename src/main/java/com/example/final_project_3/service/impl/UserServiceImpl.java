@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl extends BaseUserServiceImpl<BaseUser, UserRepository>
         implements UserService {
 
-
     public UserServiceImpl(UserRepository repository) {
         super(repository);
     }

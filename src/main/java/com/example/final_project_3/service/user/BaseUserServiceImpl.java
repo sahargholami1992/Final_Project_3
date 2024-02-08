@@ -4,9 +4,10 @@ package com.example.final_project_3.service.user;
 
 
 import com.example.final_project_3.entity.BaseUser;
+import com.example.final_project_3.exceptions.NoMatchResultException;
+import com.example.final_project_3.exceptions.NotFoundException;
 import com.example.final_project_3.repository.user.BaseUserRepository;
-import com.example.final_project_3.service.dto.UserSearch;
-import jakarta.persistence.NoResultException;
+import com.example.final_project_3.dto.UserSearch;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,14 +19,16 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public abstract class BaseUserServiceImpl<T extends BaseUser,R extends BaseUserRepository<T>> implements BaseUserService<T> {
+public abstract class BaseUserServiceImpl<T extends BaseUser,R extends BaseUserRepository<T>>
+        implements BaseUserService<T> {
 
     protected final R repository;
 
+    @Transactional
     @Override
     public T changePassword(String email, String newPassword) {
         T user = repository.findByEmail(email).
-                orElseThrow(() -> new NullPointerException("userName or password is wrong"));
+                orElseThrow(() -> new NoMatchResultException("userName or password is wrong"));
         user.setPassword(newPassword);
         return repository.save(user);
     }
@@ -36,20 +39,9 @@ public abstract class BaseUserServiceImpl<T extends BaseUser,R extends BaseUserR
     }
 
     @Override
-    public T logIn(String email, String password) {
-        T user = repository.findByEmail(email).
-                orElseThrow(() -> new NullPointerException("userName or password is wrong"));
-
-        if (password.equals(user.getPassword())){
-            return user;
-        }
-        throw new NoResultException("userName or password is wrong");
-
-    }
-
-    @Override
     public T findByEmail(String email) {
-        return repository.findByEmail(email).orElseThrow(() -> new NullPointerException("this user not found"));
+        return repository.findByEmail(email).
+                orElseThrow(() -> new NotFoundException("this user not found"));
     }
 
     @Override
@@ -84,10 +76,6 @@ public abstract class BaseUserServiceImpl<T extends BaseUser,R extends BaseUserR
                 if (searchCriteria.getExpertiseField() != null && !searchCriteria.getExpertiseField().isEmpty()) {
                     predicate = cb.and(predicate, cb.equal(root.get("subServices").get("subServiceName"), searchCriteria.getExpertiseField()));
                 }
-//                if (searchCriteria.getExpertiseField() != null) {
-//                    Join<T, SubService> expertJoin = root.join("experts", JoinType.INNER);
-//                    predicate = cb.and(predicate, cb.equal(expertJoin.get("subServiceName"), searchCriteria.getExpertiseField()));
-//                }
 
                 if (searchCriteria.getMinRating() != 0) {
                     predicate = cb.and(predicate, cb.greaterThanOrEqualTo(root.get("score"), searchCriteria.getMinRating()));
@@ -98,18 +86,21 @@ public abstract class BaseUserServiceImpl<T extends BaseUser,R extends BaseUserR
                     query.orderBy(cb.desc(root.get("score")));
                 }
 
-
                 return predicate;
             };
         }
     @Override
     public T findById(Integer id){
        return repository.findById(id)
-               .orElseThrow(() -> new NullPointerException("this id not found"));
+               .orElseThrow(() -> new NotFoundException("this id not found"));
     }
 
+    @Override
+    public boolean existById(Integer id){
+        return repository.existsById(id);
     }
 
+}
 
 
 

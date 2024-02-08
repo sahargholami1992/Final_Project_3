@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order,Integer> {
    @Query("SELECT o FROM Order o JOIN o.subService s JOIN s.experts e WHERE e = :expert")
-   List<Order> findOrderByForExpert(@Param("expert") Expert expert);
+   List<Order> findOrderByForExpert(Expert expert);
 
 
 }

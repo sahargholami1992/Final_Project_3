@@ -4,7 +4,7 @@ package com.example.final_project_3.service.user;
 
 
 import com.example.final_project_3.entity.BaseUser;
-import com.example.final_project_3.service.dto.UserSearch;
+import com.example.final_project_3.dto.UserSearch;
 
 import java.util.Collection;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
 public interface BaseUserService<T extends BaseUser>  {
     T changePassword(String email, String newPassword);
     boolean existByEmail(String email);
-    T logIn(String email, String password);
+
     T findByEmail(String email);
 
     Collection<T> loadAll();
@@ -22,4 +22,5 @@ public interface BaseUserService<T extends BaseUser>  {
     T findById(Integer id);
 
 
+    boolean existById(Integer id);
 }

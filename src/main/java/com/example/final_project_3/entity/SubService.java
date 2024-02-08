@@ -20,10 +20,10 @@ public class SubService implements Serializable {
     @GeneratedValue
     private Integer id;
 
-    @Column(unique = true)
-    @Pattern(regexp = "^[a-zA-Z\\s]+$")
+//    @Column(unique = true)
+//    @Pattern(regexp = "^[a-zA-Z\\s]+$")
     private String subServiceName;
-    @NotNull
+//    @NotNull
     private double basePrice;
 //    @NotNull
     private String description;

@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface BasicServiceRepository extends JpaRepository<BasicService,Integer> {
 
-    boolean existsByServiceName(@Pattern(regexp = "^[a-zA-Z\\s]+$") String serviceName);
+    boolean existsByServiceName(String serviceName);
 
     Optional<BasicService> findByServiceName(String serviceName);
 }

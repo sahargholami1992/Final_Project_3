@@ -4,6 +4,8 @@ package com.example.final_project_3.service.impl;
 import com.example.final_project_3.entity.BasicService;
 import com.example.final_project_3.entity.Expert;
 import com.example.final_project_3.entity.SubService;
+import com.example.final_project_3.exceptions.NoMatchResultException;
+import com.example.final_project_3.exceptions.NotFoundException;
 import com.example.final_project_3.repository.SubServiceRepository;
 import com.example.final_project_3.service.SubServiceService;
 import jakarta.persistence.NoResultException;
@@ -28,7 +30,7 @@ public class SubServiceServiceImpl implements SubServiceService {
     @Transactional
     @Override
     public void saveExpert(SubService subService, Expert expert) {
-        Set<Expert> experts = new HashSet<>();
+        Set<Expert> experts = subService.getExperts();
         experts.add(expert);
         subService.setExperts(experts);
         repository.save(subService);
@@ -38,12 +40,12 @@ public class SubServiceServiceImpl implements SubServiceService {
     public SubService editSubService(String subServiceName, double price, String description) {
         if (repository.existsBySubServiceName(subServiceName)) {
             SubService subService = repository.findBySubServiceName(subServiceName).orElseThrow
-                    (() -> new NoResultException("userName or password is wrong"));
+                    (() -> new NotFoundException("this sub service not found"));
             subService.setBasePrice(price);
             subService.setDescription(description);
             repository.save(subService);
             return subService;
-        }else throw new IllegalArgumentException("this subService name is not exist");
+        }else throw new NoMatchResultException("this subService name is not exist");
     }
 
     @Override
@@ -67,7 +69,10 @@ public class SubServiceServiceImpl implements SubServiceService {
     }
 
     @Override
-    public void deleteAll() {
-        repository.deleteAll();
+    public SubService findBySubServiceName(String subServiceName) {
+        return repository.findBySubServiceName(subServiceName).orElseThrow(
+                () -> new NotFoundException("this object not found")
+        );
     }
+
 }

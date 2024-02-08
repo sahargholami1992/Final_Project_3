@@ -1,4 +1,4 @@
-package com.example.final_project_3.service.dto;
+package com.example.final_project_3.dto;
 
 import com.example.final_project_3.entity.enumaration.Roll;
 import lombok.Getter;
