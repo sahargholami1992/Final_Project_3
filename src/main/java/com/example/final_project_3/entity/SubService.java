@@ -1,8 +1,6 @@
 package com.example.final_project_3.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.io.Serializable;
@@ -20,13 +18,13 @@ public class SubService implements Serializable {
     @GeneratedValue
     private Integer id;
 
-//    @Column(unique = true)
-//    @Pattern(regexp = "^[a-zA-Z\\s]+$")
+
     private String subServiceName;
-//    @NotNull
+
     private double basePrice;
-//    @NotNull
+
     private String description;
+
     @OneToMany(mappedBy = "subService")
     private List<Order> orders;
 

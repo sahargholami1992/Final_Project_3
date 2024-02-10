@@ -2,7 +2,6 @@ package com.example.final_project_3.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.io.Serializable;
@@ -20,8 +19,6 @@ public class BasicService implements Serializable {
     @GeneratedValue
     private Integer id;
 
-//   @Column(unique = true)
-//   @Pattern(regexp = "^[a-zA-Z\\s]+$")
     private String serviceName;
     @ToString.Exclude
     @OneToMany(mappedBy = "basicService")
@@ -32,11 +29,4 @@ public class BasicService implements Serializable {
     }
 
 
-//    @Override
-//    public String toString() {
-//        return "Service{" +
-//                "id=" + id +
-//                ", serviceName='" + serviceName + '\'' +
-//                '}';
-//    }
 }

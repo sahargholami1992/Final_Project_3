@@ -59,7 +59,7 @@ public abstract class BaseUserServiceImpl<T extends BaseUser,R extends BaseUserR
 
 
                 if (searchCriteria.getRole() != null) {
-                    predicate = cb.and(predicate, cb.equal(root.get("role"), searchCriteria.getRole()));
+                    predicate = cb.and(predicate, cb.equal(root.get("roll"), searchCriteria.getRole()));
                 }
 
                 if (searchCriteria.getFirstName() != null && !searchCriteria.getFirstName().isEmpty()) {
